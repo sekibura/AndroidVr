@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,30 +9,33 @@ public class SetupInitialization : MonoBehaviour
 
     [SerializeField]
     private  bool _isVR;
+    private bool _isMobile = true;
     public bool IsVR => _isVR;
+    public bool IsMobile => _isMobile;
+
+    //public event Action OnVREnable;
+    //public event Action OnVRDisable;
 
     private void Awake()
     {
-#if !PLATFORM_ANDROID && !UNITY_ANDROID
-_isVR = false;
-#endif
-    }
 
-
-    // Метод, выполняемый при старте игры
-    void Start()
-    {
-  
         if (instance == null)
-        { 
-            instance = this; 
+        {
+            instance = this;
         }
         else if (instance == this)
-        { 
-            Destroy(gameObject); 
+        {
+            Destroy(gameObject);
         }
         DontDestroyOnLoad(gameObject);
-    }
 
-   
+#if !PLATFORM_ANDROID || !UNITY_ANDROID || UNITY_EDITOR
+_isVR = false;
+_isMobile = false;
+#endif
+
+        Debug.Log("vr= " + _isVR + "|mobile=" + IsMobile);
+
+
+    }   
 }

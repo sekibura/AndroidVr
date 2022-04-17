@@ -19,6 +19,7 @@
 using Google.XR.Cardboard;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.XR.Management;
 
 /// <summary>
 /// Initializes Cardboard XR Plugin.
@@ -35,13 +36,16 @@ public class CardboardStartup : MonoBehaviour
         // Configures the app to not shut down the screen and sets the brightness to maximum.
         // Brightness control is expected to work only in iOS, see:
         // https://docs.unity3d.com/ScriptReference/Screen-brightness.html.
-        Screen.sleepTimeout = SleepTimeout.NeverSleep;
-        Screen.brightness = 1.0f;
+        
 
 
         // Checks if the device parameters are stored and scans them if not.
-        if (SetupInitialization.instance.IsVR)
+        if (SetupInitialization.instance.IsVR && SetupInitialization.instance.IsMobile)
         {
+            StartCoroutine(StartXR());
+
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
+            Screen.brightness = 1.0f;
             if (!Api.HasDeviceParams())
             {
                 Api.ScanDeviceParams();
@@ -54,7 +58,7 @@ public class CardboardStartup : MonoBehaviour
     /// </summary>
     public void Update()
     {
-        if(SetupInitialization.instance.IsVR)
+        if(SetupInitialization.instance.IsVR&& SetupInitialization.instance.IsMobile)
             ApiUpdate();
 
     }
@@ -82,5 +86,21 @@ public class CardboardStartup : MonoBehaviour
         }
 
         Api.UpdateScreenParams();
+    }
+
+    public IEnumerator StartXR()
+    {
+        Debug.Log("Initializing XR...");
+        yield return XRGeneralSettings.Instance.Manager.InitializeLoader();
+
+        if (XRGeneralSettings.Instance.Manager.activeLoader == null)
+        {
+            Debug.LogError("Initializing XR Failed. Check Editor or Player log for details.");
+        }
+        else
+        {
+            Debug.Log("Starting XR...");
+            XRGeneralSettings.Instance.Manager.StartSubsystems();
+        }
     }
 }

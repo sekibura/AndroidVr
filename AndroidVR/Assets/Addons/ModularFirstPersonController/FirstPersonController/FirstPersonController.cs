@@ -158,6 +158,7 @@ public class FirstPersonController : MonoBehaviour
     {
         if (SetupInitialization.instance.IsVR)
         {
+            Debug.Log("vr = true");
             cameraCanMove = false;
         }
     }
@@ -232,18 +233,20 @@ public class FirstPersonController : MonoBehaviour
         // Control camera movement
         if(cameraCanMove)
         {
+            var sens = ControlSensitivity.instance.GetLookSensitivity();
+            Debug.Log(sens);
             //yaw = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * mouseSensitivity;
-            yaw = transform.localEulerAngles.y + _inputActions.Player.FPSView.ReadValue<Vector2>().x * mouseSensitivity;
-
+            //yaw = transform.localEulerAngles.y + _inputActions.Player.FPSView.ReadValue<Vector2>().x * mouseSensitivity;
+            yaw = transform.localEulerAngles.y + _inputActions.Player.FPSView.ReadValue<Vector2>().x * sens ;
             if (!invertCamera)
             {
                 //pitch -= mouseSensitivity * Input.GetAxis("Mouse Y");
-                pitch -= mouseSensitivity * _inputActions.Player.FPSView.ReadValue<Vector2>().y;
+                pitch -= sens * _inputActions.Player.FPSView.ReadValue<Vector2>().y;
             }
             else
             {
                 // Inverted Y
-                pitch += mouseSensitivity * _inputActions.Player.FPSView.ReadValue<Vector2>().y;
+                pitch += sens * _inputActions.Player.FPSView.ReadValue<Vector2>().y;
             }
 
             // Clamp pitch between lookAngle
@@ -399,7 +402,6 @@ public class FirstPersonController : MonoBehaviour
         {
             // Calculate how fast we should be moving
             Vector3 targetVelocity = new Vector3(_inputActions.Player.Move.ReadValue<Vector2>().x, 0, _inputActions.Player.Move.ReadValue<Vector2>().y);
-
             // Checks if player is walking and isGrounded
             // Will allow head bob
             if (targetVelocity.x != 0 || targetVelocity.z != 0 && isGrounded)
