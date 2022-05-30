@@ -234,7 +234,7 @@ public class FirstPersonController : MonoBehaviour
         if(cameraCanMove)
         {
             var sens = ControlSensitivity.instance.GetLookSensitivity();
-            Debug.Log(sens);
+            //Debug.Log(sens);
             //yaw = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * mouseSensitivity;
             //yaw = transform.localEulerAngles.y + _inputActions.Player.FPSView.ReadValue<Vector2>().x * mouseSensitivity;
             yaw = transform.localEulerAngles.y + _inputActions.Player.FPSView.ReadValue<Vector2>().x * sens ;
@@ -454,7 +454,10 @@ public class FirstPersonController : MonoBehaviour
                     sprintBarCG.alpha -= 3 * Time.deltaTime;
                 }
 
-                targetVelocity = transform.TransformDirection(targetVelocity) * walkSpeed;
+                if (SetupInitialization.instance.IsVR)
+                    targetVelocity = playerCamera.transform.TransformDirection(targetVelocity) * walkSpeed;
+                else
+                    targetVelocity = transform.TransformDirection(targetVelocity) * walkSpeed;
 
                 // Apply a force that attempts to reach our target velocity
                 Vector3 velocity = rb.velocity;

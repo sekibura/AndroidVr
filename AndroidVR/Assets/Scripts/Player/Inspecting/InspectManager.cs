@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using TMPro;
 
 public class InspectManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class InspectManager : MonoBehaviour
     public Transform playerSocket;
 
     private Vector3 _originalPos;
+    private Vector3 _originalRotation;
     private bool _onInspect = false;
     private GameObject _inspected;
 
@@ -17,9 +19,10 @@ public class InspectManager : MonoBehaviour
     private FirstPersonController _fpsController;
 
     private InspectableObject _inspectableObject;
-    
 
-    //private bool _toInspect = false;
+    [SerializeField]
+    private OnScreenMessageScript _onScreenMessageManager;
+
 
     private void Awake()
     {
@@ -58,6 +61,7 @@ public class InspectManager : MonoBehaviour
                     //Debug.Log("2");
                     _inspected = hit.transform.gameObject;
                     _originalPos = hit.transform.position;
+                    _originalRotation = hit.transform.rotation.eulerAngles;
                     _onInspect = true;
                     StartCoroutine(PickUpItem(_inspectableObject));
                 }
@@ -75,6 +79,9 @@ public class InspectManager : MonoBehaviour
         {
             _inspected.transform.SetParent(null);
             _inspected.transform.position = Vector3.Lerp(_inspected.transform.position, _originalPos, 0.2f);
+            //_inspected.transform.eulerAngles= Vector3.Lerp(_inspected.transform.eulerAngles, _originalRotation, 0.2f);
+            _inspected.transform.eulerAngles = _originalRotation;
+
         }
 
         if ((_inputActions.Player.Cancel.ReadValue<float>() > 0.1f) && _onInspect)
@@ -94,11 +101,13 @@ public class InspectManager : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         _inspected.transform.SetParent(playerSocket);
         inspectableObject.DoSmth();
+        _onScreenMessageManager.ShowMessage(inspectableObject.Message);
     }
 
     private IEnumerator DropItem()
     {
         Debug.Log("Drop");
+        _onScreenMessageManager.CloseMessage();
         _inspected.transform.rotation = Quaternion.identity;
         yield return new WaitForSeconds(0.2f);
         _fpsController.enabled = true;
@@ -106,4 +115,6 @@ public class InspectManager : MonoBehaviour
         //_playerLookController.IsEnable = true;
         //_personMovementController.IsEnable = false;
     }
+
+    
 }

@@ -64,19 +64,19 @@ public class ControlSensitivity : MonoBehaviour
 
             case "Mouse":
             {
-                    Debug.Log("Mouse");
+                    //Debug.Log("Mouse");
                     return MouseLookSensitivity;
             }
 
             case "XInputControllerWindows":
             {
-                    Debug.Log("XInputControllerWindows");
+                    //Debug.Log("XInputControllerWindows");
                     return GamepadLookSensitivity;
             }
 
             case "Gamepad":
             {
-                    Debug.Log("Gamepad");
+                    //Debug.Log("Gamepad");
                     return TouchpadLookSensitivity;
             }
 
