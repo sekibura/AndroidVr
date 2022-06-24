@@ -8,4 +8,8 @@ public interface IInteractable
     public bool IsInteractable { get; }
 
     public void OnInteract();
+
+    
+
+    
 }

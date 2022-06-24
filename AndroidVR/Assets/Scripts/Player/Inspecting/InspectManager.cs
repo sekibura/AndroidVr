@@ -22,7 +22,11 @@ public class InspectManager : MonoBehaviour
 
     [SerializeField]
     private OnScreenMessageScript _onScreenMessageManager;
+    [SerializeField]
+    private OnScreenTargetScript _onScreenTargetScript;
 
+
+    private GameObject _highLightedObject;
 
     private void Awake()
     {
@@ -55,7 +59,9 @@ public class InspectManager : MonoBehaviour
             if(_inspectableObject != null && !_onInspect)
             {
                 //Debug.Log("1");
-                
+
+                _onScreenTargetScript.ShowHand(true);
+                HighlightObject(_inspectableObject.gameObject, true);
                 if (_inputActions.Player.Interaction.ReadValue<float>() > 0.1f)
                 {
                     //Debug.Log("2");
@@ -66,6 +72,18 @@ public class InspectManager : MonoBehaviour
                     StartCoroutine(PickUpItem(_inspectableObject));
                 }
             }
+            else
+            {
+                _onScreenTargetScript.ShowHand(false);
+                //if(_inspectableObject)
+                    HighlightObject(null, false);
+            }
+        }
+        else
+        {
+            _onScreenTargetScript.ShowHand(false);
+           // if (_inspectableObject)
+                HighlightObject(null, false);
         }
 
         if (_onInspect)
@@ -116,5 +134,27 @@ public class InspectManager : MonoBehaviour
         //_personMovementController.IsEnable = false;
     }
 
-    
+
+    private void HighlightObject(GameObject gameObject, bool isOn)
+    {
+        if (isOn)
+            if (_highLightedObject != gameObject)
+            {
+                if(_highLightedObject!=null)
+                    _highLightedObject.GetComponent<Outline>().enabled = false;
+                _highLightedObject = gameObject;
+            }
+                
+            
+
+        if (_highLightedObject != null)
+        {
+            //Debug.Log("isOn " + isOn);
+            _highLightedObject.GetComponent<Outline>().enabled = isOn;
+            
+            if (!isOn)
+                _highLightedObject = null;
+        }
+            
+    }
 }
