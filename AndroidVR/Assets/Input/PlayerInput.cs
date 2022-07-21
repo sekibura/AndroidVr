@@ -339,6 +339,87 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""UIInput"",
+            ""id"": ""375d952d-19cc-4da0-9a9a-a40918d3e40d"",
+            ""actions"": [
+                {
+                    ""name"": ""Confirm"",
+                    ""type"": ""Button"",
+                    ""id"": ""ee261d73-7133-4d45-86ee-0bb38ce9073f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pause"",
+                    ""type"": ""Button"",
+                    ""id"": ""3d4605a5-071b-49f6-9352-358205632a7e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""c975f120-2853-436d-9315-6054fc581c9c"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""MouseKeyboard"",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e5672c6a-701a-4393-b20b-982b4f7dfb9e"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""GamePad"",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9d20a239-590a-4dea-a30b-f853a33bb660"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""GamePad"",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""56ef7735-5a20-4b35-a778-a3d9dcad5729"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""MouseKeyboard"",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""21f9af78-f362-4288-ac62-0b89932f7882"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""GamePad"",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -378,6 +459,10 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         m_Player_Run = m_Player.FindAction("Run", throwIfNotFound: true);
         m_Player_FPSView = m_Player.FindAction("FPSView", throwIfNotFound: true);
         m_Player_Cancel = m_Player.FindAction("Cancel", throwIfNotFound: true);
+        // UIInput
+        m_UIInput = asset.FindActionMap("UIInput", throwIfNotFound: true);
+        m_UIInput_Confirm = m_UIInput.FindAction("Confirm", throwIfNotFound: true);
+        m_UIInput_Pause = m_UIInput.FindAction("Pause", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -498,6 +583,47 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // UIInput
+    private readonly InputActionMap m_UIInput;
+    private IUIInputActions m_UIInputActionsCallbackInterface;
+    private readonly InputAction m_UIInput_Confirm;
+    private readonly InputAction m_UIInput_Pause;
+    public struct UIInputActions
+    {
+        private @PlayerInput m_Wrapper;
+        public UIInputActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Confirm => m_Wrapper.m_UIInput_Confirm;
+        public InputAction @Pause => m_Wrapper.m_UIInput_Pause;
+        public InputActionMap Get() { return m_Wrapper.m_UIInput; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(UIInputActions set) { return set.Get(); }
+        public void SetCallbacks(IUIInputActions instance)
+        {
+            if (m_Wrapper.m_UIInputActionsCallbackInterface != null)
+            {
+                @Confirm.started -= m_Wrapper.m_UIInputActionsCallbackInterface.OnConfirm;
+                @Confirm.performed -= m_Wrapper.m_UIInputActionsCallbackInterface.OnConfirm;
+                @Confirm.canceled -= m_Wrapper.m_UIInputActionsCallbackInterface.OnConfirm;
+                @Pause.started -= m_Wrapper.m_UIInputActionsCallbackInterface.OnPause;
+                @Pause.performed -= m_Wrapper.m_UIInputActionsCallbackInterface.OnPause;
+                @Pause.canceled -= m_Wrapper.m_UIInputActionsCallbackInterface.OnPause;
+            }
+            m_Wrapper.m_UIInputActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Confirm.started += instance.OnConfirm;
+                @Confirm.performed += instance.OnConfirm;
+                @Confirm.canceled += instance.OnConfirm;
+                @Pause.started += instance.OnPause;
+                @Pause.performed += instance.OnPause;
+                @Pause.canceled += instance.OnPause;
+            }
+        }
+    }
+    public UIInputActions @UIInput => new UIInputActions(this);
     private int m_MouseKeyboardSchemeIndex = -1;
     public InputControlScheme MouseKeyboardScheme
     {
@@ -523,5 +649,10 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         void OnRun(InputAction.CallbackContext context);
         void OnFPSView(InputAction.CallbackContext context);
         void OnCancel(InputAction.CallbackContext context);
+    }
+    public interface IUIInputActions
+    {
+        void OnConfirm(InputAction.CallbackContext context);
+        void OnPause(InputAction.CallbackContext context);
     }
 }

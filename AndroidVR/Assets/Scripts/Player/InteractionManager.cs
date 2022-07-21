@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// для объектов которые не требуют отклика со стороны игрока, по типу дверей. То есть нажали, а дальше объект сам обрабатывает.
 public class InteractionManager : MonoBehaviour
 {
     [SerializeField]

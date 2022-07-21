@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using TMPro;
 
+//для объектов, которые требуют приближения при рассмотрении и тд.
+
 public class InspectManager : MonoBehaviour
 {
     private PlayerInput _inputActions;

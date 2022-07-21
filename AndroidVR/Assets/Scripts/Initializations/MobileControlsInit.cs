@@ -8,7 +8,7 @@ public class MobileControlsInit : MonoBehaviour
     private GameObject _controlElements;
     void Start()
     {
-        Debug.Log(SetupInitialization.instance.IsVR + " " + !SetupInitialization.instance.IsMobile);
+        Debug.Log("Mobile control is init: is vr:" + SetupInitialization.instance.IsVR + " | ismobile:" + SetupInitialization.instance.IsMobile);
         if(SetupInitialization.instance.IsVR || !SetupInitialization.instance.IsMobile)
         {
             Debug.Log("set false");
